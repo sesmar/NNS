@@ -18,4 +18,12 @@ public abstract class Agent {
 		_grid = grid;
 		_liquidity = liquidity;
 	}
+	
+	public void receiveIncome(double incomeAmount){
+		_liquidity += incomeAmount;
+	}
+	
+	public double getLiquidity(){
+		return _liquidity;
+	}
 }
