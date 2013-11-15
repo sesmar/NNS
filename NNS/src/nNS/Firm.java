@@ -38,7 +38,7 @@ public class Firm extends Agent {
 	public void step(){
 		double tickCount = RunEnvironment.getInstance().getCurrentSchedule().getTickCount();
 		
-		if (tickCount % 15 == 0){
+		if (tickCount % 15 == 0 || tickCount == 1){
 			payEmployees();
 			produceGoods();
 		}
