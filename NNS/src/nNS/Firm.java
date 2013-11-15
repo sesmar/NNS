@@ -2,6 +2,7 @@ package nNS;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import repast.simphony.engine.environment.RunEnvironment;
 import repast.simphony.engine.schedule.ScheduledMethod;
@@ -11,16 +12,20 @@ import repast.simphony.space.grid.Grid;
 
 public class Firm extends Agent {
 	
+	private UUID _id;
 	private double _inventory;
 	private double _price;
 	private double _reservationPrice;
 	private double _wageRate;
 	private double _markup;
 	private double _productivity = 1.125;
+	private boolean _isHiring = false;
 	private List<Household> _employees = new ArrayList<Household>();
 	
 	public Firm(ContinuousSpace<Object> space, Grid<Object> grid, double liquidity, double reservationPrice) {
 		super(space, grid, liquidity);
+		
+		_id = UUID.randomUUID();
 		
 		this._reservationPrice = reservationPrice;
 		this._price = this._reservationPrice * RandomHelper.nextDoubleFromTo(1, 2);
@@ -33,7 +38,7 @@ public class Firm extends Agent {
 	public void step(){
 		double tickCount = RunEnvironment.getInstance().getCurrentSchedule().getTickCount();
 		
-		if (tickCount % 30 == 0){
+		if (tickCount % 15 == 0){
 			payEmployees();
 			produceGoods();
 		}
@@ -42,14 +47,22 @@ public class Firm extends Agent {
 	protected void payEmployees(){
 		for(Household hh : _employees){
 			if (_liquidity > _wageRate){
-				hh.receiveIncome(_wageRate);
+				hh.receiveIncome(_wageRate * 15);
 				_liquidity -= _wageRate;
 			}
 		}
 	}
 	
+	protected boolean isHiring(){
+		return _isHiring;
+	}
+	
 	protected void produceGoods(){
-		_inventory += (_productivity * _employees.size());
+		_inventory += (_productivity * _employees.size()) * 15;
+	}
+	
+	public String getIdString(){
+		return _id.toString();
 	}
 	
 	public double getWage(){
@@ -58,6 +71,14 @@ public class Firm extends Agent {
 	
 	public double getPrice(){
 		return _price;
+	}
+	
+	public double getMarkup(){
+		return _markup;
+	}
+	
+	public double getCurrentInventory(){
+		return _inventory;
 	}
 	
 	public boolean hireEmployee(Household employee){
@@ -70,7 +91,7 @@ public class Firm extends Agent {
 	}
 	
 	public boolean purchaseGood(){
-		if (_inventory > 0){
+		if (_inventory >= 1){
 			this.receiveIncome(_price);
 			_inventory--;
 			

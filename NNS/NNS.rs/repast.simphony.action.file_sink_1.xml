@@ -1,0 +1,17 @@
+<repast.simphony.data2.engine.FileSinkDescriptor>
+  <name>Firm Data</name>
+  <dataSet>Firm Data</dataSet>
+  <delimiter>,</delimiter>
+  <format>TABULAR</format>
+  <sourceIds class="linked-hash-set">
+    <string>tick</string>
+    <string>IdString</string>
+    <string>Liquidity</string>
+    <string>CurrentInventory</string>
+    <string>Price</string>
+    <string>Wage</string>
+    <string>Markup</string>
+  </sourceIds>
+  <fileName>FirmData.csv</fileName>
+  <addTimeStamp>true</addTimeStamp>
+</repast.simphony.data2.engine.FileSinkDescriptor>

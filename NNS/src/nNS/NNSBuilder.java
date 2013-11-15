@@ -1,5 +1,8 @@
 package nNS;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import repast.simphony.context.Context;
 import repast.simphony.context.space.continuous.ContinuousSpaceFactory;
 import repast.simphony.context.space.continuous.ContinuousSpaceFactoryFinder;
@@ -46,20 +49,31 @@ public class NNSBuilder implements ContextBuilder<Object> {
 				);
 		
 		int firmCount = 20;
+		List<Firm> firms = new ArrayList<Firm>();
 		
 		for(int i = 0; i <= firmCount; i++){
-			context.add(new Firm(space, grid, RandomHelper.nextDoubleFromTo(100, 500), RandomHelper.nextDoubleFromTo(10, 40)));
+			Firm f =  new Firm(space, grid, RandomHelper.nextDoubleFromTo(2000, 2500), RandomHelper.nextDoubleFromTo(10, 40));
+			context.add(f);
+			firms.add(f);
 		}
 		
 		int householdCount = 200;
+		List<Household> households = new ArrayList<Household>();
 		
 		for(int i = 0; i <= householdCount; i++){
-			context.add(new Household(space, grid, RandomHelper.nextDoubleFromTo(100, 300), RandomHelper.nextDoubleFromTo(5, 20)));
+			Household hh = new Household(space, grid, RandomHelper.nextDoubleFromTo(450, 500), RandomHelper.nextDoubleFromTo(10, 20)); 
+			context.add(hh);
+			households.add(hh);
 		}
 		
 		for (Object obj : context){
 			NdPoint pt = space.getLocation(obj);
 			grid.moveTo(obj, (int)pt.getX(), (int)pt.getY());
+		}
+		
+		for(Household hh : households){
+			hh.seekEmployment(firms, context);
+			hh.determineTradeConnections(firms, context);
 		}
 		
 		return context;
