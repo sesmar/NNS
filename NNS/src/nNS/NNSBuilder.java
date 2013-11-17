@@ -52,7 +52,7 @@ public class NNSBuilder implements ContextBuilder<Object> {
 		List<Firm> firms = new ArrayList<Firm>();
 		
 		for(int i = 0; i <= firmCount; i++){
-			Firm f =  new Firm(space, grid, RandomHelper.nextDoubleFromTo(2000, 2500), RandomHelper.nextDoubleFromTo(10, 40));
+			Firm f =  new Firm(space, grid, RandomHelper.nextDoubleFromTo(2000, 2500), RandomHelper.nextDoubleFromTo(10, 25));
 			context.add(f);
 			firms.add(f);
 		}

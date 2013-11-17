@@ -11,7 +11,6 @@ public abstract class Agent {
 	protected Grid<Object> _grid;
 	
 	protected double _liquidity;
-	protected List<Agent> tradeConnections = new ArrayList<Agent>();
 	
 	public Agent(ContinuousSpace<Object> space, Grid<Object> grid, double liquidity){
 		_space = space;

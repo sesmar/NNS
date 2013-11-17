@@ -6,6 +6,7 @@ import java.util.List;
 import repast.simphony.random.RandomHelper;
 import repast.simphony.space.continuous.ContinuousSpace;
 import repast.simphony.space.graph.Network;
+import repast.simphony.space.graph.RepastEdge;
 import repast.simphony.space.grid.Grid;
 import repast.simphony.util.ContextUtils;
 import repast.simphony.context.Context;
@@ -18,6 +19,10 @@ public class Household extends Agent {
 	private boolean _employed;
 	
 	private Firm _employer = null;
+	private RepastEdge<Object> _employmentEdge = null;
+	
+	protected List<TradeConnection> tradeConnections = new ArrayList<TradeConnection>();
+	protected List<Firm> tradingFirms = new ArrayList<Firm>();
 	
 	public Household(ContinuousSpace<Object> space, Grid<Object> grid, double liquidity, double reservationWage){
 		super(space, grid, liquidity);
@@ -44,12 +49,12 @@ public class Household extends Agent {
 			}
 		}
 		
-		if (tickCount % 30 == 0){
-			seekEmployment(hiringFirms, context);
+		if (tickCount % 15 == 0){
 			determineTradeConnections(firms, context);
 		}
 		
-		purchaseGoods();
+		seekEmployment(hiringFirms, context);
+		purchaseGoods(context);
 	}
 	
 	public void seekEmployment(List<Firm> firms, Context<Object> context){
@@ -60,7 +65,7 @@ public class Household extends Agent {
 				
 				if (!_employed || firm.getWage() > _reservationWage){
 					Network<Object> net = (Network<Object>)context.getProjection("employment network");
-					net.addEdge(firm, this);
+					_employmentEdge = net.addEdge(firm, this);
 					
 					if (firm.hireEmployee(this))
 					{
@@ -79,27 +84,51 @@ public class Household extends Agent {
 				int index = RandomHelper.nextIntFromTo(0, firms.size() - 1);
 				Firm firm = firms.get(index);
 				
-				if (!tradeConnections.contains(firm)){
+				if (!tradingFirms.contains(firm)){
+					TradeConnection tradeConnection = new TradeConnection();
 					Network<Object> net = (Network<Object>)context.getProjection("trade network");
-					net.addEdge(this, firm);
-				
-					tradeConnections.add(firm);
+					
+					tradeConnection.edge = net.addEdge(this, firm);					
+					tradeConnection.firm = firm;
+
+					tradingFirms.add(firm);
+					tradeConnections.add(tradeConnection);
 				}
 			}
 		}
 	}
 	
-	protected void purchaseGoods(){
-		int index = RandomHelper.nextIntFromTo(0, tradeConnections.size() - 1);
-		Firm firm = (Firm)tradeConnections.get(index);
+	protected void purchaseGoods(Context<Object> context){
+		if (tradeConnections.size() > 0){
+			int index = RandomHelper.nextIntFromTo(0, tradeConnections.size() - 1);
+			TradeConnection tc = tradeConnections.get(index); 
+			Firm firm = tc.firm;
 		
-		if(_liquidity > firm.getPrice()){
-			if (firm.purchaseGood()){
-				_liquidity -= firm.getPrice();
-			} else {
-				tradeConnections.remove(firm);
+			if(_liquidity > firm.getPrice()){
+				if (firm.purchaseGood()){
+					_liquidity -= firm.getPrice();
+				} else {
+					Network<Object> net = (Network<Object>)context.getProjection("trade network");
+					net.removeEdge(tc.edge);
+					tradeConnections.remove(tc);
+					tradingFirms.remove(firm);
+				}
 			}
 		}
+	}
+	
+	public void fire(){
+		if (_employmentEdge != null){
+			Context<Object> context = ContextUtils.getContext(this);
+			
+			Network<Object> net = (Network<Object>)context.getProjection("employment network");
+			net.removeEdge(_employmentEdge);
+			_employmentEdge = null;
+		}
+		
+		_employer = null;
+		_employed = false;
+		_currentWage = 0;
 	}
 	
 	@Override

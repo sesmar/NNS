@@ -11,6 +11,7 @@
     <string>Price</string>
     <string>Wage</string>
     <string>Markup</string>
+    <string>EmployeeCount</string>
   </sourceIds>
   <fileName>FirmData.csv</fileName>
   <addTimeStamp>true</addTimeStamp>
