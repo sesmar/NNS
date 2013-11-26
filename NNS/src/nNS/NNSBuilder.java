@@ -20,7 +20,13 @@ import repast.simphony.space.grid.SimpleGridAdder;
 import repast.simphony.space.grid.WrapAroundBorders;
 
 public class NNSBuilder implements ContextBuilder<Object> {
-
+	public static List<Firm> firms = new ArrayList<Firm>();
+	public static List<Household> households = new ArrayList<Household>();
+	
+	public static int NumberOfFirms = 20;
+	public static int NumberOfHouseholds = 300;
+	public static int MaxNumberOfTradeConnections = 5;
+	
 	@Override
 	public Context build(Context<Object> context) {
 		context.setId("NNS");
@@ -48,19 +54,16 @@ public class NNSBuilder implements ContextBuilder<Object> {
 					true, 500, 500)
 				);
 		
-		int firmCount = 20;
-		List<Firm> firms = new ArrayList<Firm>();
+		StatsAgent sa = new StatsAgent(space, grid, 0);
+		context.add(sa);
 		
-		for(int i = 0; i <= firmCount; i++){
+		for(int i = 0; i <= NumberOfFirms; i++){
 			Firm f =  new Firm(space, grid, RandomHelper.nextDoubleFromTo(2000, 2500), RandomHelper.nextDoubleFromTo(10, 25));
 			context.add(f);
 			firms.add(f);
 		}
 		
-		int householdCount = 200;
-		List<Household> households = new ArrayList<Household>();
-		
-		for(int i = 0; i <= householdCount; i++){
+		for(int i = 0; i <= NumberOfHouseholds; i++){
 			Household hh = new Household(space, grid, RandomHelper.nextDoubleFromTo(450, 500), RandomHelper.nextDoubleFromTo(10, 20)); 
 			context.add(hh);
 			households.add(hh);
@@ -77,5 +80,17 @@ public class NNSBuilder implements ContextBuilder<Object> {
 		}
 		
 		return context;
+	}
+	
+	public static double unemploymentRate(){
+		double unemployedCount = 0;
+		
+		for(Household hh : households){
+			if (!hh.isEmployed()){
+				unemployedCount++;
+			}
+		}
+		
+		return (unemployedCount / households.size()) * 100;
 	}
 }

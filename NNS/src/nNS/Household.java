@@ -79,7 +79,7 @@ public class Household extends Agent {
 	}
 	
 	public void determineTradeConnections(List<Firm> firms, Context<Object> context){
-		while (tradeConnections.size() < 7){
+		while (tradeConnections.size() < NNSBuilder.MaxNumberOfTradeConnections){
 			if (firms.size() > 0){
 				int index = RandomHelper.nextIntFromTo(0, firms.size() - 1);
 				Firm firm = firms.get(index);
@@ -134,5 +134,9 @@ public class Household extends Agent {
 	@Override
 	public String toString(){
 		return "Household";
+	}
+	
+	public boolean isEmployed(){
+		return _employed;
 	}
 }

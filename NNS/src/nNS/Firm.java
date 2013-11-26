@@ -18,7 +18,7 @@ public class Firm extends Agent {
 	private double _reservationPrice;
 	private double _wageRate;
 	private double _markup;
-	private double _productivity = 1;
+	private double _productivity = 2;
 	private boolean _isHiring = false;
 	private List<Household> _employees = new ArrayList<Household>();
 	private double _soldCount = 0;
@@ -65,6 +65,8 @@ public class Firm extends Agent {
 			if (_liquidity > (_wageRate * _periodLength)){
 				hh.receiveIncome(_wageRate * _periodLength);
 				_liquidity -= (_wageRate * _periodLength);
+			}else {
+				hh.fire();
 			}
 		}
 	}
