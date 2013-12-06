@@ -49,7 +49,7 @@ public class Household extends Agent {
 			}
 		}
 		
-		if (tickCount % 15 == 0){
+		if (tickCount % NNSBuilder.PeriodLength == 0){
 			determineTradeConnections(firms, context);
 		}
 		
@@ -138,5 +138,9 @@ public class Household extends Agent {
 	
 	public boolean isEmployed(){
 		return _employed;
+	}
+	
+	public double getWage(){
+		return _currentWage;
 	}
 }

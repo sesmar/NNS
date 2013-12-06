@@ -18,13 +18,13 @@ public class Firm extends Agent {
 	private double _reservationPrice;
 	private double _wageRate;
 	private double _markup;
-	private double _productivity = 2;
+	private double _productivity = NNSBuilder.Productivity;
 	private boolean _isHiring = false;
 	private List<Household> _employees = new ArrayList<Household>();
 	private double _soldCount = 0;
 	private double _requestCount = 0;
 	
-	private int _periodLength = 15;
+	private int _periodLength = NNSBuilder.PeriodLength;
 	
 	public Firm(ContinuousSpace<Object> space, Grid<Object> grid, double liquidity, double reservationPrice) {
 		super(space, grid, liquidity);
@@ -32,7 +32,7 @@ public class Firm extends Agent {
 		_id = UUID.randomUUID();
 		
 		this._reservationPrice = reservationPrice;
-		this._price = this._reservationPrice;// * RandomHelper.nextDoubleFromTo(1, 2);
+		this._price = this._reservationPrice;
 		this._markup = RandomHelper.nextDoubleFromTo(.001, .5);
 		
 		this._wageRate = this._price - (this._price * this._markup);
@@ -62,9 +62,9 @@ public class Firm extends Agent {
 	
 	protected void payEmployees(){
 		for(Household hh : _employees){
-			if (_liquidity > (_wageRate * _periodLength)){
-				hh.receiveIncome(_wageRate * _periodLength);
-				_liquidity -= (_wageRate * _periodLength);
+			if (_liquidity > (hh.getWage() * _periodLength)){
+				hh.receiveIncome(hh.getWage() * _periodLength);
+				_liquidity -= (hh.getWage()* _periodLength);
 			}else {
 				hh.fire();
 			}

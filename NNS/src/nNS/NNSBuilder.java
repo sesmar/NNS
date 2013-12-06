@@ -24,8 +24,10 @@ public class NNSBuilder implements ContextBuilder<Object> {
 	public static List<Household> households = new ArrayList<Household>();
 	
 	public static int NumberOfFirms = 20;
-	public static int NumberOfHouseholds = 300;
+	public static int NumberOfHouseholds = 200;
 	public static int MaxNumberOfTradeConnections = 5;
+	public static int Productivity = 3;
+	public static int PeriodLength = 15;
 	
 	@Override
 	public Context build(Context<Object> context) {
