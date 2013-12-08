@@ -99,19 +99,23 @@ public class Household extends Agent {
 	}
 	
 	protected void purchaseGoods(Context<Object> context){
-		if (tradeConnections.size() > 0){
-			int index = RandomHelper.nextIntFromTo(0, tradeConnections.size() - 1);
-			TradeConnection tc = tradeConnections.get(index); 
-			Firm firm = tc.firm;
+		int numberOfGoods = RandomHelper.nextIntFromTo(0, NNSBuilder.DemandForGoods);
 		
-			if(_liquidity > firm.getPrice()){
-				if (firm.purchaseGood()){
-					_liquidity -= firm.getPrice();
-				} else {
-					Network<Object> net = (Network<Object>)context.getProjection("trade network");
-					net.removeEdge(tc.edge);
-					tradeConnections.remove(tc);
-					tradingFirms.remove(firm);
+		for(int i = 0; i < numberOfGoods; i++){
+			if (tradeConnections.size() > 0){
+				int index = RandomHelper.nextIntFromTo(0, tradeConnections.size() - 1);
+				TradeConnection tc = tradeConnections.get(index); 
+				Firm firm = tc.firm;
+			
+				if(_liquidity > firm.getPrice()){
+					if (firm.purchaseGood()){
+						_liquidity -= firm.getPrice();
+					} else {
+						Network<Object> net = (Network<Object>)context.getProjection("trade network");
+						net.removeEdge(tc.edge);
+						tradeConnections.remove(tc);
+						tradingFirms.remove(firm);
+					}
 				}
 			}
 		}

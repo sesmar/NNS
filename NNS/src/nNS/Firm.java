@@ -23,6 +23,10 @@ public class Firm extends Agent {
 	private List<Household> _employees = new ArrayList<Household>();
 	private double _soldCount = 0;
 	private double _requestCount = 0;
+	private int excessMonths = 0;
+	private int shortageMonths = 0;
+	private int seekingEmploymentMonthCount = 0;
+	
 	
 	private int _periodLength = NNSBuilder.PeriodLength;
 	
@@ -42,12 +46,39 @@ public class Firm extends Agent {
 	public void step(){
 		double tickCount = RunEnvironment.getInstance().getCurrentSchedule().getTickCount();
 		
+		
+		if (tickCount == 5500){
+			NNSBuilder.DemandForGoods = 16;
+		}
+		
+		//if (tickCount == 4000){
+		//	NNSBuilder.Productivity = 2;
+		//}
+		
 		if (tickCount % _periodLength == 0){
 			if (_inventory > 0 && (((_soldCount/_inventory) - 1) < -0.1)){
-				fireEmployee();
+				excessMonths++;
 			} else if (_soldCount < _requestCount){
-				_isHiring = true;
+				shortageMonths++;
 			}
+		}
+		
+		if (excessMonths > 3){
+			fireEmployee();
+			excessMonths = 0;
+		}
+		
+		if (shortageMonths > 3){
+			_isHiring = true;
+			shortageMonths = 0;
+		}
+		
+		if (_isHiring){
+			seekingEmploymentMonthCount++;
+		}
+		
+		if (seekingEmploymentMonthCount > 3){
+			this._wageRate += 1;
 		}
 		
 		if (tickCount % _periodLength == 0 || tickCount == 1){
@@ -121,7 +152,7 @@ public class Firm extends Agent {
 	}
 	
 	public double getMarkup(){
-		return _markup;
+		return (1 - _wageRate/_price) + 1;
 	}
 	
 	public double getCurrentInventory(){
@@ -136,6 +167,7 @@ public class Firm extends Agent {
 		if (!_employees.contains(employee)){
 			_employees.add(employee);
 			_isHiring = false;
+			seekingEmploymentMonthCount = 0;
 			return true;
 		}
 		
